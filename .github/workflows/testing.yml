@@ -1,0 +1,41 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+        # checkout the repo
+        - uses: actions/checkout@v3
+
+        # set up Node.js in the virtual machine
+        - name: Setup Node.js
+          uses: actions/checkout@v3
+          with:
+            node-version: 22
+        
+        # install dependencies
+        - name: Install Dependecies
+          run: npm install
+
+        # Run jest unit tests
+        - name: Run jest unit tests
+          run: npm run test:unit
+
+        # start local server for cypress
+        - name: start HTTP server
+          run: npx http-server public -p 8080 &
+
+        # wait for server to be ready
+        - name: wait for server
+          run: npx wait-on http://localhost:8080
+
+        # Run cypress E2E tests
+        - name: Run Cypress tests
+          run: npm run test:e2e
