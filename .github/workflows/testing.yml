@@ -1,41 +1,42 @@
 name: CI
 
 on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  tests:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-        # checkout the repo
-        - uses: actions/checkout@v3
+      #Checkout the repo
+      - uses: actions/checkout@v3
 
-        # set up Node.js in the virtual machine
-        - name: Setup Node.js
-          uses: actions/checkout@v3
-          with:
-            node-version: 22
-        
-        # install dependencies
-        - name: Install Dependecies
-          run: npm install
+      #Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-        # Run jest unit tests
-        - name: Run jest unit tests
-          run: npm run test:unit
+      #Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-        # start local server for cypress
-        - name: start HTTP server
-          run: npx http-server public -p 8080 &
+      #Run Jest unit tests
+      - name: Run Jest unit tests
+        run: npm run test:unit
 
-        # wait for server to be ready
-        - name: wait for server
-          run: npx wait-on http://localhost:8080
+      #Start local server for Cypress
+      - name: Start HTTP server
+        run: npx http-server public -p 8080 &
+        # "&" runs it in background so next steps continue
 
-        # Run cypress E2E tests
-        - name: Run Cypress tests
-          run: npm run test:e2e
+      #Wait for server to be ready
+      - name: Wait for server
+        run: npx wait-on http://localhost:8080
+
+      #Run Cypress E2E tests
+      - name: Run Cypress tests
+        run: npm run test:e2e
